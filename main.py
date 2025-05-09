@@ -46,6 +46,4 @@ def getPortfolio(qty: str = "false", avg_price: str = "false") -> list:
 
 
 if __name__ == "__main__":
-    a = getPortfolio("true", "true")
-    print(a)
     mcp.run(transport="stdio")
