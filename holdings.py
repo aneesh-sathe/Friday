@@ -1,4 +1,3 @@
-import logging
 import os
 
 from dotenv import load_dotenv
@@ -6,13 +5,10 @@ from kiteconnect import KiteConnect
 
 
 class Holding:
-    def __init__(
-        self,
-        ticker: str,
-        qty: int,
-    ):
+    def __init__(self, ticker: str, qty: int, avg_value: float):
         self.ticker = ticker
         self.qty = qty
+        self.avg_value = avg_value
 
 
 load_dotenv()
@@ -22,7 +18,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 REQUEST_TOKEN = os.getenv("REQUEST_TOKEN")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 kite = KiteConnect(api_key=API_KEY)
 
@@ -38,6 +34,10 @@ kite.set_access_token(ACCESS_TOKEN)
 
 def getCurrentHoldings() -> list[Holding]:
     holdings = kite.holdings()
+    print(holdings[0])
 
-    portfolio = [Holding(x["tradingsymbol"], x["quantity"]) for x in holdings]  # type: ignore
+    portfolio = [Holding(x["tradingsymbol"], x["quantity"], x["average_price"]) for x in holdings]  # type: ignore
     return portfolio
+
+
+
