@@ -26,4 +26,6 @@ kite.set_access_token(ACCESS_TOKEN)
 
 
 # Fetch all orders
-print(kite.profile())
+holdings = kite.holdings()
+portfolio = [x["tradingsymbol"] for x in holdings]
+print(portfolio)
