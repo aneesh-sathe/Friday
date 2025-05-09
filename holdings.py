@@ -4,6 +4,17 @@ import os
 from dotenv import load_dotenv
 from kiteconnect import KiteConnect
 
+
+class Holding:
+    def __init__(
+        self,
+        ticker: str,
+        qty: int,
+    ):
+        self.ticker = ticker
+        self.qty = qty
+
+
 load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
@@ -25,7 +36,8 @@ kite = KiteConnect(api_key=API_KEY)
 kite.set_access_token(ACCESS_TOKEN)
 
 
-# Fetch all orders
-holdings = kite.holdings()
-portfolio = [x["tradingsymbol"] for x in holdings]
-print(portfolio)
+def getCurrentHoldings() -> list[Holding]:
+    holdings = kite.holdings()
+
+    portfolio = [Holding(x["tradingsymbol"], x["quantity"]) for x in holdings]  # type: ignore
+    return portfolio
