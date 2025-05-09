@@ -5,10 +5,10 @@ from kiteconnect import KiteConnect
 
 
 class Holding:
-    def __init__(self, ticker: str, qty: int, avg_value: float):
+    def __init__(self, ticker: str, qty: int, avg_price: float):
         self.ticker = ticker
         self.qty = qty
-        self.avg_value = avg_value
+        self.avg_price = avg_price
 
 
 load_dotenv()
@@ -34,10 +34,8 @@ kite.set_access_token(ACCESS_TOKEN)
 
 def getCurrentHoldings() -> list[Holding]:
     holdings = kite.holdings()
-    print(holdings[0])
 
-    portfolio = [Holding(x["tradingsymbol"], x["quantity"], x["average_price"]) for x in holdings]  # type: ignore
+    portfolio = [
+        Holding(x["tradingsymbol"], x["quantity"], x["average_price"]) for x in holdings
+    ]  # type: ignore
     return portfolio
-
-
-
