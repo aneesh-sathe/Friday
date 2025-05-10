@@ -51,8 +51,3 @@ def generate_links(keywords: list[str], model: str, max_results: int):
         return links
     else:
         print("Unable to generate links")
-
-
-if __name__ == "__main__":
-    # print(search_web("zomato annual report 2024 site:https://www.screener.in/", 5))
-    print(generate_links(keywords, "qwen3:4b", 2))
