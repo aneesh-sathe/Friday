@@ -37,7 +37,7 @@ def generate_query(model: str, keywords: list[str]) -> list[str] | None:
             ollama.pull(model)
 
 
-def generate_links(keywords: list[str], model: str, max_results: int):
+def generate_links(keywords: list[str], model: str, max_results: int) -> list[str]:
     links = []
     search_list = generate_query(model=model, keywords=keywords)
     # print(search_list)
@@ -50,4 +50,8 @@ def generate_links(keywords: list[str], model: str, max_results: int):
                 links.append(body["href"])
         return links
     else:
-        print("Unable to generate links")
+        print("failed to fetch results")
+        raise SystemExit("Stopping app: failed to fetch results")
+
+
+print(generate_links(keywords=keywords, model="qwen3:4b", max_results=1))
