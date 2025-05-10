@@ -1,30 +1,86 @@
 import asyncio
+from dataclasses import dataclass
 
-from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig
-from crawl4ai.content_filter_strategy import BM25ContentFilter
-from crawl4ai.markdown_generation_strategy import DefaultMarkdownGenerator
+from crawl4ai import (
+    AsyncWebCrawler,
+    BrowserConfig,
+    CacheMode,
+    CrawlerRunConfig,
+    DefaultMarkdownGenerator,
+    PruningContentFilter,
+)
 from search import generate_links
 
 
-async def main(url: str, user_query: str):
+@dataclass
+class CrawledResult:
+    url: str
+    text: str
+
+
+async def main(urls: list[str], user_query: str):
+    '''llm_config = LLMConfig(provider="ollama/qwen3:4b")
+    filter = LLMContentFilter(
+        llm_config=llm_config,  # or your preferred provider
+        instruction="""
+    You are an expert financial document analyst.
+
+    Your task is to extract only the content directly related to a company’s financials, performance, and material business developments from the provided scraped text.
+
+    Include content related to:
+    - Quarterly or annual earnings (revenue, profit/loss, EBITDA, margins)
+    - Financial guidance, forecasts, or revisions
+    - Stock performance commentary
+    - Management commentary on financial results
+    - M&A, divestitures, strategic investments, or capital expenditures
+    - Credit ratings, analyst upgrades/downgrades with financial rationale
+    - Macroeconomic factors impacting company performance
+
+    Exclude:
+    - Hyperlinks and any other links
+    - Repeated or filler content
+
+    Output must be:
+    - Clean, well-structured **Markdown**
+    - Free of broken lines, redundant text, and empty sections
+    - Only the filtered relevant text, no additional explanation
+    """,
+        chunk_token_threshold=1024,
+        verbose=True,
+    )
+
+    md_generator = DefaultMarkdownGenerator(
+        content_filter=filter, options={"ignore_links": True}
+    )'''
+
+    prune_filter = PruningContentFilter(
+        threshold=0.45, threshold_type="dynamic", min_word_threshold=5
+    )
+    md_generator = DefaultMarkdownGenerator(content_filter=prune_filter)
+
     browser_config = BrowserConfig(
         verbose=True, headless=True, text_mode=True, light_mode=True
     )
     run_config = CrawlerRunConfig(
-        markdown_generator=DefaultMarkdownGenerator(
-            content_filter=BM25ContentFilter(
-                bm25_threshold=0.8,
-                user_query=user_query,
-            ),
-            options={"ignore_links": True},
-        ),
-        excluded_tags=["nav", "header"],
+        markdown_generator=md_generator,
+        excluded_tags=["nav", "header", "form", "a", "img", "footer"],
         exclude_external_links=True,
+        exclude_all_images=True,
+        exclude_internal_links=True,
+        cache_mode=CacheMode.BYPASS,
+        only_text=True,
     )
+
     async with AsyncWebCrawler(config=browser_config) as crawler:
-        result = await crawler.arun(url=url, config=run_config)
-        return result
+        results = []
+        for url in urls:
+            result = await crawler.arun(url=url, config=run_config)
+            results.append(
+                CrawledResult(url=result.url, text=result.markdown.fit_markdown)
+            )
+        return results
 
 
-links = generate_links()
-print(asyncio.run(main()))
+keywords = ["RELIANCE SHARE"]
+links = generate_links(keywords=keywords, model="qwen3:4b", max_results=10)
+print(asyncio.run(main(urls=links, user_query="financials")))

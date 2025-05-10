@@ -1,9 +1,11 @@
 import ast
+import random
 import re
 from time import sleep
 
 import ollama
 from duckduckgo_search import DDGS
+from duckduckgo_search.exceptions import DuckDuckGoSearchException
 
 keywords = ["Tata Motors", "2025", "2024"]
 
@@ -40,18 +42,23 @@ def generate_query(model: str, keywords: list[str]) -> list[str] | None:
 def generate_links(keywords: list[str], model: str, max_results: int) -> list[str]:
     links = []
     search_list = generate_query(model=model, keywords=keywords)
-    # print(search_list)
+
     if search_list:
-        for query in search_list:
-            search_result = DDGS().text(query, max_results=max_results)
-            sleep(3)
-            print(search_result)
-            for body in search_result:
-                links.append(body["href"])
-        return links
+        for query in search_list[:2]:
+            try:
+                search_result = DDGS().text(query, max_results=max_results)
+                sleep(random.uniform(5, 10))  # instead of a fixed 5s
+                print(search_result)
+                for body in search_result:
+                    links.append(body["href"])
+            except DuckDuckGoSearchException as e:
+                print(f"DuckDuckGoSearchException: {e}")
+            except Exception as e:
+                print(f"Unhandled Exception: {type(e).__name__} - {e}")
+        urls = [url for url in links if not url.lower().endswith(".pdf")]
+        print(f"fetched {len(urls)} links ")
+        return urls
+
     else:
         print("failed to fetch results")
-        raise SystemExit("Stopping app: failed to fetch results")
-
-
-print(generate_links(keywords=keywords, model="qwen3:4b", max_results=1))
+        raise SystemExit("stopping app: failed to fetch results")
