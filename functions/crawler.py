@@ -18,7 +18,7 @@ class CrawledResult:
     text: str
 
 
-async def main(urls: list[str], user_query: str):
+async def main(urls: list[str]):
     '''llm_config = LLMConfig(provider="ollama/qwen3:4b")
     filter = LLMContentFilter(
         llm_config=llm_config,  # or your preferred provider
@@ -73,14 +73,17 @@ async def main(urls: list[str], user_query: str):
 
     async with AsyncWebCrawler(config=browser_config) as crawler:
         results = []
-        for url in urls:
-            result = await crawler.arun(url=url, config=run_config)
-            results.append(
-                CrawledResult(url=result.url, text=result.markdown.fit_markdown)
-            )
+        try:
+            for url in urls:
+                result = await crawler.arun(url=url, config=run_config)
+                results.append(
+                    CrawledResult(url=result.url, text=result.markdown.fit_markdown)
+                )
+        except Exception as e:
+            print(e)
         return results
 
 
-keywords = ["RELIANCE SHARE"]
-links = generate_links(keywords=keywords, model="qwen3:4b", max_results=10)
-print(asyncio.run(main(urls=links, user_query="financials")))
+keywords = ["RELIANCE INDUSTRIES LIMITED SHARE"]
+links = generate_links(keywords=keywords, model="qwen3:4b", max_results=5)
+print(asyncio.run(main(urls=links)))
