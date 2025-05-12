@@ -5,7 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "chromadb>=1.0.8",
+    "crawl4ai>=0.6.2",
+    "duckduckgo-search>=8.0.1",
     "httpx>=0.28.1",
     "kiteconnect>=5.0.1",
     "mcp[cli]>=1.8.0",
+    "ollama>=0.4.8",
 ]

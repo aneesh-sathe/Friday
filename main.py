@@ -1,15 +1,13 @@
+from datetime import datetime
+
 from mcp.server.fastmcp import FastMCP
 
-from holdings import getCurrentHoldings
+from functions.crawler import crawl_web
+from functions.embeddings import addToVectorDB, getVectorDB
+from functions.search import generate_links
+from zerodha import getCurrentHoldings
 
-mcp = FastMCP("Demo")
-
-
-# Add an addition tool
-@mcp.tool()
-def add(a: int, b: int) -> int:
-    """Add two numbers"""
-    return a + b
+mcp = FastMCP("Portfolio-Analyzer")
 
 
 @mcp.tool()
@@ -43,6 +41,21 @@ def getPortfolio(qty: str = "false", avg_price: str = "false") -> list:
         result.append(portfolio_item)
 
     return result
+
+
+async def getStockContext(stock: str):
+    stock = stock.capitalize() + "STOCK"
+    current_year = datetime.now().year
+    keywords = [stock, str(current_year), str(current_year - 1)]
+    links = generate_links(keywords)
+    crawled_result = await crawl_web(links)
+    _, collections = getVectorDB()
+    addToVectorDB(crawled_result)
+    query = collections.query(query_texts=[stock], n_results=12)
+    sources = query.get("metadatas")
+    context = query.get("documents")
+
+    return str(context) + str(sources)
 
 
 if __name__ == "__main__":

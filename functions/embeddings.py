@@ -3,7 +3,8 @@ import os
 import chromadb
 from chromadb.config import Settings
 from chromadb.utils.embedding_functions import OllamaEmbeddingFunction
-from crawler import CrawledResult
+
+from .crawler import CrawledResult
 
 
 def getVectorDB() -> tuple[chromadb.Client, chromadb.Collection]:
