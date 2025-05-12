@@ -1,4 +1,3 @@
-import asyncio
 from dataclasses import dataclass
 
 from crawl4ai import (
@@ -9,7 +8,6 @@ from crawl4ai import (
     DefaultMarkdownGenerator,
     PruningContentFilter,
 )
-from search import generate_links
 
 
 @dataclass
@@ -18,7 +16,7 @@ class CrawledResult:
     text: str
 
 
-async def main(urls: list[str]):
+async def crawl_web(urls: list[str]):
     '''llm_config = LLMConfig(provider="ollama/qwen3:4b")
     filter = LLMContentFilter(
         llm_config=llm_config,  # or your preferred provider
@@ -82,8 +80,3 @@ async def main(urls: list[str]):
         except Exception as e:
             print(e)
         return results
-
-
-keywords = ["RELIANCE INDUSTRIES LIMITED SHARE"]
-links = generate_links(keywords=keywords, model="qwen3:4b", max_results=5)
-print(asyncio.run(main(urls=links)))
