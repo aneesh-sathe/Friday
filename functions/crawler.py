@@ -16,7 +16,7 @@ class CrawledResult:
     text: str
 
 
-async def crawl_web(urls: list[str]):
+async def crawl_web(urls: list[str]) -> list[CrawledResult]:
     '''llm_config = LLMConfig(provider="ollama/qwen3:4b")
     filter = LLMContentFilter(
         llm_config=llm_config,  # or your preferred provider

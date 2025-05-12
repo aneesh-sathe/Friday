@@ -39,7 +39,9 @@ def generate_query(model: str, keywords: list[str]) -> list[str] | None:
             ollama.pull(model)
 
 
-def generate_links(keywords: list[str], model: str, max_results: int) -> list[str]:
+def generate_links(
+    keywords: list[str], model: str = "qwen3:4b", max_results: int = 10
+) -> list[str]:
     links = []
     search_list = generate_query(model=model, keywords=keywords)
 
