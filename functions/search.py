@@ -7,8 +7,6 @@ import ollama
 from duckduckgo_search import DDGS
 from duckduckgo_search.exceptions import DuckDuckGoSearchException
 
-keywords = ["Tata Motors", "2025", "2024"]
-
 
 def generate_query(model: str, keywords: list[str]) -> list[str] | None:
     try:
@@ -41,12 +39,12 @@ def generate_query(model: str, keywords: list[str]) -> list[str] | None:
 
 def generate_links(
     keywords: list[str], model: str = "qwen3:4b", max_results: int = 10
-) -> list[str]:
+) -> tuple[list[str], list[str]]:
     links = []
     search_list = generate_query(model=model, keywords=keywords)
 
     if search_list:
-        for query in search_list[:2]:
+        for query in search_list:
             try:
                 search_result = DDGS().text(query, max_results=max_results)
                 sleep(random.uniform(5, 10))  # instead of a fixed 5s
@@ -58,9 +56,9 @@ def generate_links(
             except Exception as e:
                 print(f"Unhandled Exception: {type(e).__name__} - {e}")
         urls = [url for url in links if not url.lower().endswith(".pdf")]
-        print(f"fetched {len(urls)} links ")
-        return urls
+        # print(f"fetched {len(urls)} links ")
+        return (urls, search_list)
 
     else:
-        print("failed to fetch results")
+        # print("failed to fetch results")
         raise SystemExit("stopping app: failed to fetch results")

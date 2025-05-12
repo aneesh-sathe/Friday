@@ -35,10 +35,9 @@ def getVectorDB() -> tuple[chromadb.Client, chromadb.Collection]:
 
 
 def addToVectorDB(crawled_result: list[CrawledResult]):
-    print("adding to vdb")
+    # print("adding to vdb")
     _, collection = getVectorDB()
     for idx, res in enumerate(crawled_result):
         collection.add(
             documents=[res.text], metadatas=[{"source": res.url}], ids=[str(idx)]
         )
-        print(f"{idx} added to vectorDB")

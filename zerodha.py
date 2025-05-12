@@ -36,6 +36,8 @@ def getCurrentHoldings() -> list[Holding]:
     holdings = kite.holdings()
 
     portfolio = [
-        Holding(x["tradingsymbol"], x["quantity"], x["average_price"]) for x in holdings
-    ]  # type: ignore
+        Holding(x["tradingsymbol"], x["quantity"], x["average_price"])  # type: ignore
+        for x in holdings
+    ]
+
     return portfolio

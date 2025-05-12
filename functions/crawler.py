@@ -57,7 +57,7 @@ async def crawl_web(urls: list[str]) -> list[CrawledResult]:
     md_generator = DefaultMarkdownGenerator(content_filter=prune_filter)
 
     browser_config = BrowserConfig(
-        verbose=True, headless=True, text_mode=True, light_mode=True
+        verbose=False, headless=True, text_mode=True, light_mode=True
     )
     run_config = CrawlerRunConfig(
         markdown_generator=md_generator,
@@ -78,5 +78,5 @@ async def crawl_web(urls: list[str]) -> list[CrawledResult]:
                     CrawledResult(url=result.url, text=result.markdown.fit_markdown)
                 )
         except Exception as e:
-            print(e)
+            #print(e)
         return results

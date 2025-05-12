@@ -43,15 +43,16 @@ def getPortfolio(qty: str = "false", avg_price: str = "false") -> list:
     return result
 
 
+@mcp.tool()
 async def getStockContext(stock: str):
     stock = stock.capitalize() + "STOCK"
     current_year = datetime.now().year
     keywords = [stock, str(current_year), str(current_year - 1)]
-    links = generate_links(keywords)
+    links, search_list = generate_links(keywords)
     crawled_result = await crawl_web(links)
     _, collections = getVectorDB()
     addToVectorDB(crawled_result)
-    query = collections.query(query_texts=[stock], n_results=12)
+    query = collections.query(query_texts=search_list, n_results=10)
     sources = query.get("metadatas")
     context = query.get("documents")
 
