@@ -1,11 +1,29 @@
+import os
+
 import chromadb
-import ollama
-from chromadb import Documents, EmbeddingFunction, Embeddings
-
-chroma_client = chromadb.Client()
+from chromadb.utils.embedding_functions import OllamaEmbeddingFunction
+from crawler import CrawledResult
 
 
-class OllamaEmbeddings(EmbeddingFunction):
-    def __call__(self, input: Documents) -> Embeddings:
-        response = ollama.embeddings(model="nomic-embed-text", prompt=input)
-        return response["embedding"]
+def getVectorDB() -> tuple[chromadb.Client, chromadb.Collection]:
+    client = chromadb.PersistentClient(path=f"{os.getcwd()}")
+
+    ollama_ef = OllamaEmbeddingFunction(
+        url="http://localhost:11434/api/embeddings",
+        model_name="nomic-embed-text:latest",
+    )
+
+    collection = client.get_or_create_collection(
+        name="search_embeddings",
+        embedding_function=ollama_ef,
+        metadata={"hsnw:space": "cosine"},
+    )
+
+    return (client, collection)
+
+
+def addToVectorDB(crawled_result: list[CrawledResult]):
+    pass
+
+
+getVectorDB()
