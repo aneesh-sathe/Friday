@@ -19,7 +19,7 @@ def generate_query(model: str, keywords: list[str]) -> list[str] | None:
 
                     Your primary objective is to prioritize the most relevant and timely information — including current news, financial reports, earnings announcements, regulatory changes, mergers and acquisitions, and other recent developments — related to the following keywords: {keywords}.
 
-                    Return 5 to 10 specific and well-structured search queries that would yield the most up-to-date results.
+                    Return 5 specific and well-structured search queries that would yield the most up-to-date results.
 
                     Return type: a Python list of strings. Return ONLY the list. No explanation, no preamble, no formatting.""",
                 },
@@ -38,7 +38,7 @@ def generate_query(model: str, keywords: list[str]) -> list[str] | None:
 
 
 def generate_links(
-    keywords: list[str], model: str = "qwen3:4b", max_results: int = 10
+    keywords: list[str], model: str = "qwen3:4b", max_results: int = 3
 ) -> tuple[list[str], list[str]]:
     links = []
     search_list = generate_query(model=model, keywords=keywords)

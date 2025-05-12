@@ -77,6 +77,7 @@ async def crawl_web(urls: list[str]) -> list[CrawledResult]:
                 results.append(
                     CrawledResult(url=result.url, text=result.markdown.fit_markdown)
                 )
-        except Exception as e:
-            #print(e)
+        except Exception:
+            pass
+            # print(e)
         return results
